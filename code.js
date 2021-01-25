@@ -5697,21 +5697,25 @@ function main() {
         // Roboto Regular is the font that objects will be created with by default in
         // Figma. We need to wait for fonts to load before creating text using them.
         yield figma.loadFontAsync({ family: "Roboto", style: "Regular" });
-        // if (figma.currentPage.selection[0].type === "TEXT") {
-        //   const textNodes = findTextNodes(figma.currentPage);
-        //   textNodes.forEach((textNode) => replacePlaceholder(textNode, msg.body));
-        // } else {
-        const nodes = [];
-        const text = figma.createText();
-        text.insertCharacters(0, generateAddress());
-        console.log(text);
-        // figma.currentPage.appendChild(text);
-        nodes.push(text);
-        figma.currentPage.selection = nodes;
-        figma.viewport.scrollAndZoomIntoView(nodes);
+        if (figma.currentPage.selection.length === 1 &&
+            figma.currentPage.selection[0].type === "TEXT") {
+            const text = figma.currentPage.selection[0];
+            if (figma.currentPage.selection.length > 0) {
+                figma.currentPage.selection[0].characters = "";
+            }
+            text.insertCharacters(0, generateAddress());
+        }
+        else {
+            const nodes = [];
+            const text = figma.createText();
+            text.insertCharacters(0, generateAddress());
+            console.log(text);
+            nodes.push(text);
+            figma.currentPage.selection = nodes;
+            figma.viewport.scrollAndZoomIntoView(nodes);
+        }
     });
 }
-// }
 main().then((message) => {
     figma.closePlugin(message);
 });
