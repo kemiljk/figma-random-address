@@ -5695,24 +5695,22 @@ function generateAddress() {
 console.log(generateAddress());
 
 async function main(): Promise<string | undefined> {
-  // Roboto Regular is the font that objects will be created with by default in
-  // Figma. We need to wait for fonts to load before creating text using them.
-  await figma.loadFontAsync({ family: "Roboto", style: "Regular" });
-
   if (
     figma.currentPage.selection.length === 1 &&
     figma.currentPage.selection[0].type === "TEXT"
   ) {
-    const text = figma.currentPage.selection[0];
+    const node = figma.currentPage.selection[0];
+    await figma.loadFontAsync(node.fontName as FontName);
     if (figma.currentPage.selection.length > 0) {
       figma.currentPage.selection[0].characters = "";
     }
+    const text = figma.currentPage.selection[0];
     text.insertCharacters(0, generateAddress());
   } else {
     const nodes = [];
+    await figma.loadFontAsync({ family: "Roboto", style: "Regular" });
     const text = figma.createText();
     text.insertCharacters(0, generateAddress());
-    console.log(text);
     nodes.push(text);
     figma.currentPage.selection = nodes;
     figma.viewport.scrollAndZoomIntoView(nodes);
